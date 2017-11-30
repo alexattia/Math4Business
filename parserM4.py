@@ -24,10 +24,10 @@ def parse_bitinfocharts():
     d.quit()
     df = pd.DataFrame()
     df['Columns'] = [k.find('td').getText() for k in bs.find_all('tr')]
-    for crypto in ['btc', 'eth', 'ltc']:
+    for crypto in ['btc', 'eth', 'ltc', 'dash']:
         df[crypto.upper()] = [p.getText() for p in bs.find_all(class_='c_%s' % crypto)]
     df2 = df.copy()
-    stopwords = ['BTC', 'ETH', 'LTC']
+    stopwords = ['BTC', 'ETH', 'LTC', 'DASH']
     def remove_chars(x):
         num = re.sub('[^0-9]','', x)
         if len(str(num)) < 3:
