@@ -156,7 +156,7 @@ def parse_one_block_blockcypher(blockchain, block_number):
     results = {}
     response = requests.get('https://api.blockcypher.com/v1/%s/main/blocks/%s' % (blockchain, block_number))
     if response.status_code == 200:
-        r = json.loads(response.content)
+        r = json.loads(response.content.decode('latin1'))
         results["fees_satoshi"] = r['fees']
         results['block_number'] = r['height']
         results['transactions'] = r['n_tx']
@@ -174,7 +174,9 @@ def get_first_block(blockchain):
     """
     response = requests.get('https://api.blockcypher.com/v1/%s/main' % blockchain)
     if response.status_code == 200:
-        return int(json.loads(response.content)['height'])
+        return int(json.loads(response.content.decode('latin1'))['height'])
+    elif response.status_code == 429:
+        print('Too many requests')
 
 def parse_blockcypher(blockchain, first_block=None, n_block=200):
     """
@@ -192,6 +194,6 @@ def parse_blockcypher(blockchain, first_block=None, n_block=200):
         if block != -1:
             r.append(block)
         else:
-            print('Error after block number %s' % block_number)
+            print('Error after block number %s (%s blocks done)' % (block_number, first_block-block_number))
             break
     return pd.DataFrame(r)
