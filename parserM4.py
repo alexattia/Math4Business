@@ -196,4 +196,7 @@ def parse_blockcypher(blockchain, first_block=None, n_block=200):
         else:
             print('Error after block number %s (%s blocks done)' % (block_number, first_block-block_number))
             break
-    return pd.DataFrame(r)
+    df = pd.DataFrame(r)
+    df['datetime'] = pd.to_datetime(df['time'], format="%Y-%m-%dT%H:%M:%SZ")
+    df['time_block'] = df['datetime'].diff(periods=-1)
+    return df
