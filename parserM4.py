@@ -8,7 +8,7 @@ import pandas as pd
 import re
 from bs4 import BeautifulSoup
 from selenium.common.exceptions import TimeoutException
-from datetime import datetime
+from datetime import datetime, timedelta
 import requests
 import json
 
@@ -63,7 +63,11 @@ def parse_one_day_btc(year, month, day):
     :param date: info about the day to scrap
     """
     d = webdriver.PhantomJS()
-    d.get("https://btc.com/block?date=%s-%s-%s" % (year, month, day))
+    d.set_page_load_timeout(5)
+    try:
+        d.get("https://btc.com/block?date=%s-%02d-%02d" % (year, month, day))
+    except:
+        pass
     table = d.find_element_by_class_name('table').find_element_by_tag_name('tbody').get_attribute('innerHTML')
     bs = BeautifulSoup(table, "lxml")
     d.quit()
@@ -79,13 +83,11 @@ def parse_btc(n_days=10):
     :param n_days: number of days to parse
     :return: "clean" dataframe
     """
-    month = datetime.now().month
-    year = datetime.now().year
-    current_day = datetime.now().day
-
+    now = datetime.now()
     df = pd.DataFrame()
-    for dd in range(current_day, current_day-n_days, -1):
-        cols, temp = parse_one_day_btc(year, month, dd)
+    for i in range(n_days):
+        date = now -timedelta(i)
+        cols, temp = parse_one_day_btc(date.year, date.month, date.day)
         df = pd.concat([df, temp])
     df = df.reset_index(drop=True)
     df.columns = cols[0]
