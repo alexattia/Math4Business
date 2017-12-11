@@ -12,6 +12,8 @@ from datetime import datetime, timedelta
 import requests
 import json
 
+columns = ['Height', 'Transactions', 'AvgFee/Tx', 'RewardFee', 'Time']
+
 def parse_bitinfocharts():
     d = webdriver.PhantomJS()
     d.set_page_load_timeout(5)
@@ -27,6 +29,7 @@ def parse_bitinfocharts():
     for crypto in ['btc', 'eth', 'ltc', 'dash']:
         df[crypto.upper()] = [p.getText() for p in bs.find_all(class_='c_%s' % crypto)]
     df2 = df.copy()
+    #TODO Parsing DOGE blockchain
     stopwords = ['BTC', 'ETH', 'LTC', 'DASH']
     def remove_chars(x):
         num = re.sub('[^0-9]','', x)
@@ -62,7 +65,7 @@ def parse_one_day_btc(year, month, day):
     Scrapper to get all the block of one day on BTC.com
     :param date: info about the day to scrap
     """
-    d = webdriver.PhantomJS()
+    d = webdriver.Chrome()
     d.set_page_load_timeout(5)
     try:
         d.get("https://btc.com/block?date=%s-%02d-%02d" % (year, month, day))
@@ -97,7 +100,8 @@ def parse_btc(n_days=10):
     for col in df.columns[:6]:
         df[col] = df[col].apply(lambda x:float(x.replace(',', '')))
     df['RewardFee'] = df[df.columns[6]].apply(lambda x:float(x[x.index('+ ')+2:x.index(' BTC')]))
-    return df
+    df[columns[4]] = pd.to_datetime(df[columns[4]], format='%Y-%m-%d %H:%M:%S')
+    return df.rename(columns={'Tx Count' : columns[1], 'Avg Fee Per Tx' : columns[2]})
 
 def parse_one_day_ether(p_number, verbose=False):
     """
@@ -145,6 +149,11 @@ def parse_ether(n_blocks):
     df[df.columns[8]] = df[df.columns[8]].apply(lambda x:float(x[:x.find(' E')]))
     df[df.columns[7]] = df[df.columns[7]].apply(lambda x:float(x[:x.find(' G')].replace(',', '')) if not '-' in x else 0)
     df[df.columns[2]] = df[df.columns[2]].apply(float)
+    df = df.rename(columns={'txn' : columns[1], 
+                            'Age' : columns[4]})
+    df[columns[3]] = df['Reward']-3
+    df[columns[2]] = df[columns[3]]/df[columns[1]]
+    df[columns[4]] = pd.to_datetime(df[columns[4]], format="%b-%d-%Y %I:%M:%S %p")
     return df
 
 def parse_one_block_blockcypher(blockchain, block_number):
@@ -159,9 +168,9 @@ def parse_one_block_blockcypher(blockchain, block_number):
     response = requests.get('https://api.blockcypher.com/v1/%s/main/blocks/%s' % (blockchain, block_number))
     if response.status_code == 200:
         r = json.loads(response.content.decode('latin1'))
-        results["fees_satoshi"] = r['fees']
-        results['block_number'] = r['height']
-        results['transactions'] = r['n_tx']
+        results[columns[3]] = r['fees'] *1E-8 # convert to non-satoshi
+        results[columns[0]] = r['height']
+        results[columns[1]] = r['n_tx']
         results['time'] = r['time']
         results['nonce'] = r['nonce']
         results['blockchain'] = r["chain"]
@@ -199,6 +208,6 @@ def parse_blockcypher(blockchain, first_block=None, n_block=200):
             print('Error after block number %s (%s blocks done)' % (block_number, first_block-block_number))
             break
     df = pd.DataFrame(r)
-    df['datetime'] = pd.to_datetime(df['time'], format="%Y-%m-%dT%H:%M:%SZ")
-    df['time_block'] = df['datetime'].diff(periods=-1)
+    df[columns[4]] = pd.to_datetime(df['time'], format="%Y-%m-%dT%H:%M:%SZ")
+    df[columns[2]] = df[columns[3]]/df[columns[1]]
     return df
