@@ -1,0 +1,13 @@
+gunicorn>=19.7.1
+plotly>=2.0.9
+dash==0.17.4
+dash-auth==0.0.10
+dash-renderer==0.7.4
+dash-html-components==0.7.0
+dash-core-components==0.13.0rc4
+pandas_datareader==0.3.0.post0
+pandas==0.19.2
+Flask-Caching==1.2.0
+Flask==0.12
+numpy==1.13.3
+beautifulsoup4==4.6.0
