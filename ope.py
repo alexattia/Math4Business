@@ -10,6 +10,15 @@ tab = pd.read_csv('model.csv')
 score = tab.iloc[-1].to_dict()
 del score['Unnamed: 0']
 
+cost = tab.iloc[-2].to_dict()
+del cost['Unnamed: 0']
+
+process_time = tab.iloc[-3].to_dict()
+del process_time['Unnamed: 0']
+
+liquidity = tab.iloc[-4].to_dict()
+del liquidity['Unnamed: 0']
+
 ## To test
 param_list = tab.iloc[:,0]
 #del L[15]
@@ -39,19 +48,19 @@ app.css.append_css({
 
 # Header
 header = html.Div(
-    className='header',
+    className='header', style={'background-color' : '#1B61A4'},
     children=html.Div(
         className='container-width',
-        style={'height': '100%'},
+        style={'background-color' : '#1B61A4', 'height': '100%'},
         children=[
             html.A(html.Img(
-                src="https://ledgys.io/assets/img/logo-test.png",
+                src="https://ownest.io/images/header-logo.png",
                 className="logo"
-            ), href='https://ledgys.io/', className="logo-link"),
+            ), href='https://ownest.io/', className="logo-link"), 
 
             html.Div(className="links", children=[
-                html.A('Valeur Operationnelle', className="link active", href="/"),
-                html.A('Variables', className="link", href="/variables"),
+                html.A('Valeur Operationnelle', className="link active", href="/", style={'background-color' : '#1B61A4'}),
+                html.A('Variables', className="link", href="/variables", style={'background-color' : '#1B61A4'}),
             ])
         ]
     )
@@ -60,7 +69,7 @@ header = html.Div(
 app.layout = html.Div(children=
 [
     header,
-    html.H1(children='Ledgys Dashboard',
+    html.H1(children='Ownest Dashboard',
             style={'text-align': 'center'}
             ),
 
@@ -80,13 +89,62 @@ app.layout = html.Div(children=
               }),
     # Tabs
     html.Hr(style={'margin': '0', 'margin-bottom': '5'}),
-    dcc.Tabs(
-       tabs=[
-           {'label': i, 'value': i} for i in param_list
-       ],
-       value=param_list[0],
-       id='tabs'
-    ),
+    #dcc.Tabs(
+    #   tabs=[
+    #       {'label': i, 'value': i} for i in param_list
+    #   ],
+    #   value=param_list[0],
+    #   id='tabs'
+    #),
+    
+    html.H3(children='Temps de processing'
+            ),
+
+    html.Hr(style={'margin': '0', 'margin-bottom': '5'}),
+
+    dcc.Graph(id='cout_graph',
+              figure={
+                  'data': [
+                      {'x': list(cost.keys()), 'y': list(cost.values()), 'type': 'bar', 'name': 'SF'},
+                  ],
+                  'layout': {
+                      'title': 'Cout'
+                  }
+              }),
+
+    html.Hr(style={'margin': '0', 'margin-bottom': '5'}),
+    html.H3(children='Cout'
+            ),
+
+    html.Hr(style={'margin': '0', 'margin-bottom': '5'}),
+
+    dcc.Graph(id='process_graph',
+              figure={
+                  'data': [
+                      {'x': list(process_time.keys()), 'y': list(process_time.values()), 'type': 'bar', 'name': 'SF'},
+                  ],
+                  'layout': {
+                      'title': 'Temps de processing'
+                  }
+              }),
+
+    html.Hr(style={'margin': '0', 'margin-bottom': '5'}),
+    html.H3(children='Liquidité'
+            ),
+
+    html.Hr(style={'margin': '0', 'margin-bottom': '5'}),
+
+    dcc.Graph(id='liquidity_graph',
+              figure={
+                  'data': [
+                      {'x': list(liquidity.keys()), 'y': list(liquidity.values()), 'type': 'bar', 'name': 'SF'},
+                  ],
+                  'layout': {
+                      'title': 'Liquidité'
+                  }
+              }),
+    
+        
     html.Div(id='tab_output')
 ],
     style={
@@ -98,7 +156,7 @@ app.layout = html.Div(children=
         'background-color': '#F3F3F3',
         'padding': '40',
         'padding-top': '20',
-        'padding-bottom': '20',
+        'padding-bottom': '20'
     }
 )
 
@@ -108,14 +166,14 @@ def display_content(value):
     return html.Div([
         dcc.Graph(
             id='graph',
-            figure={
-                'data':
-                [
-                    {'x': tab.df[value].index, 'y': tab.df[value].values, 'type': 'bar', 'name': 'SF'},
-                ],
-                'layout': {
-                }
-            }
+            #figure={
+            #    'data':
+            #    [
+            #        {'x': tab.df[value].index, 'y': tab.df[value].values, 'type': 'bar', 'name': 'SF'},
+            #    ],
+            #    'layout': {
+            #    }
+            #}
         ),
         html.Div("Explication de la variable")
     ])
