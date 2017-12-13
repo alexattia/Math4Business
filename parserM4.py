@@ -14,9 +14,13 @@ import json
 
 columns = ['Height', 'Transactions', 'AvgFee/Tx', 'RewardFee', 'Time']
 
-def parse_bitinfocharts():
-    d = webdriver.PhantomJS()
+def openPhantom():
+    d = webdriver.PhantomJS('/home/alexattia/node_modules/.bin/ghostdriver')
     d.set_page_load_timeout(5)
+    return d
+
+def parse_bitinfocharts():
+    d = openPhantom()
     try:
         d.get("https://bitinfocharts.com/")
     except:
@@ -60,12 +64,12 @@ def parse_bitinfocharts():
     df2.iloc[15, 1:] = df2.iloc[15, 1:].apply(clean_reward)
     return df2
 
-def parse_one_day_btc(year, month, day):
+def parse_one_day_btc(year, month, day, verbose=False):
     """
     Scrapper to get all the block of one day on BTC.com
     :param date: info about the day to scrap
     """
-    d = webdriver.Chrome()
+    d = openPhantom()
     try:
         d.set_page_load_timeout(5)
         d.get("https://btc.com/block?date=%s-%02d-%02d" % (year, month, day))
@@ -78,7 +82,8 @@ def parse_one_day_btc(year, month, day):
     row = bs.find_all('tr')[1:]
     cols = pd.Series([k.getText() for k in bs.find_all('tr')[0].find_all('th')][:-1]), 
     values = pd.DataFrame([[k.getText().strip() for k in r.find_all('td')][:-1] for r in row])
-    print('Day %s/%s done!' % (day, month))
+    if verbose:
+        print('Day %s/%s done!' % (day, month))
     return cols, values
 
 def parse_btc(n_days=10, first_time=None):
@@ -91,6 +96,8 @@ def parse_btc(n_days=10, first_time=None):
     if first_time:
         n_days = (now - first_time).days
     df = pd.DataFrame()
+    if n_days == 0:
+       n_days = 1
     for i in range(n_days):
         date = now -timedelta(i)
         cols, temp = parse_one_day_btc(date.year, date.month, date.day)
@@ -112,9 +119,8 @@ def parse_one_day_ether(p_number, verbose=False):
     :param p_number: page number to scrap
     :param verbose: boolean for verbose
     """
-    d = webdriver.Chrome()
+    d = openPhantom()
     try:
-        d.set_page_load_timeout(7)
         d.get("https://etherscan.io/blocks?p=%s" % p_number)
     except TimeoutException:
         pass
