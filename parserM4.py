@@ -66,27 +66,30 @@ def parse_one_day_btc(year, month, day):
     :param date: info about the day to scrap
     """
     d = webdriver.Chrome()
-    d.set_page_load_timeout(5)
     try:
+        d.set_page_load_timeout(5)
         d.get("https://btc.com/block?date=%s-%02d-%02d" % (year, month, day))
-    except:
-        pass
-    table = d.find_element_by_class_name('table').find_element_by_tag_name('tbody').get_attribute('innerHTML')
+        table = d.find_element_by_class_name('table').find_element_by_tag_name('tbody').get_attribute('innerHTML')
+    except TimeoutException as ex:
+        time.sleep(1)
+        table = d.find_element_by_class_name('table').find_element_by_tag_name('tbody').get_attribute('innerHTML')
     bs = BeautifulSoup(table, "lxml")
     d.quit()
     row = bs.find_all('tr')[1:]
     cols = pd.Series([k.getText() for k in bs.find_all('tr')[0].find_all('th')][:-1]), 
     values = pd.DataFrame([[k.getText().strip() for k in r.find_all('td')][:-1] for r in row])
-    # print('Day %s/%s done!' % (day, month))
+    print('Day %s/%s done!' % (day, month))
     return cols, values
 
-def parse_btc(n_days=10):
+def parse_btc(n_days=10, first_time=None):
     """
     Parsing multiple days all the block from BTC.com
     :param n_days: number of days to parse
     :return: "clean" dataframe
     """
     now = datetime.now()
+    if first_time:
+        n_days = (now - first_time).days
     df = pd.DataFrame()
     for i in range(n_days):
         date = now -timedelta(i)
@@ -188,6 +191,7 @@ def get_first_block(blockchain):
         return int(json.loads(response.content.decode('latin1'))['height'])
     elif response.status_code == 429:
         print('Too many requests')
+        return -1
 
 def parse_blockcypher(blockchain, first_block=None, n_block=200):
     """
