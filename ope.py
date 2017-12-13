@@ -1,5 +1,5 @@
 import dash
-import dash_auth
+#import dash_auth
 import dash_core_components as dcc
 import dash_html_components as html
 import flask
@@ -10,8 +10,15 @@ tab = pd.read_csv('model.csv')
 score = tab.iloc[-1].to_dict()
 del score['Unnamed: 0']
 
+## To test
+param_list = tab.iloc[:,0]
+#del L[15]
+#del L[16]
+#del L[17]
+## To test
+
 server = flask.Flask(__name__)
-#server.secret_key = os.environ.get('secret_key', 'secret')
+# server.secret_key = os.environ.get('secret_key', 'secret')
 app = dash.Dash(__name__, server=server)
 app.config.supress_callback_exceptions = True
 
@@ -51,37 +58,37 @@ header = html.Div(
 )
 
 app.layout = html.Div(children=
-    [
-    header, 
-    html.H1(children='Ledgys Dashboard', 
-        style={'text-align': 'center'}
-        ),
+[
+    header,
+    html.H1(children='Ledgys Dashboard',
+            style={'text-align': 'center'}
+            ),
 
     html.H3(children='Valeur operationnelle'
-        ),
+            ),
 
     html.Hr(style={'margin': '0', 'margin-bottom': '5'}),
 
-    dcc.Graph(id='val_ope_graph', 
-            figure ={
-            'data': [
-                {'x': list(score.keys()), 'y': list(score.values()), 'type': 'bar', 'name': 'SF'},
-            ],
-            'layout': {
-                'title': 'Valeur Operationnelle'
-            }
-        }),
+    dcc.Graph(id='val_ope_graph',
+              figure={
+                  'data': [
+                      {'x': list(score.keys()), 'y': list(score.values()), 'type': 'bar', 'name': 'SF'},
+                  ],
+                  'layout': {
+                      'title': 'Valeur Operationnelle'
+                  }
+              }),
     # Tabs
     html.Hr(style={'margin': '0', 'margin-bottom': '5'}),
-    #dcc.Tabs(
-    #    tabs=[
-    #        {'label': i, 'value': i} for i in param_list
-    #    ],
-    #    value=param_list[0],
-    #    id='tabs'
-    #),
+    dcc.Tabs(
+       tabs=[
+           {'label': i, 'value': i} for i in param_list
+       ],
+       value=param_list[0],
+       id='tabs'
+    ),
     html.Div(id='tab_output')
-    ],
+],
     style={
         'width': '85%',
         'max-width': '1200',
@@ -94,6 +101,24 @@ app.layout = html.Div(children=
         'padding-bottom': '20',
     }
 )
+
+@app.callback(dash.dependencies.Output('tab_output', 'children'),
+    [dash.dependencies.Input('tabs', 'value')])
+def display_content(value):
+    return html.Div([
+        dcc.Graph(
+            id='graph',
+            figure={
+                'data':
+                [
+                    {'x': tab.df[value].index, 'y': tab.df[value].values, 'type': 'bar', 'name': 'SF'},
+                ],
+                'layout': {
+                }
+            }
+        ),
+        html.Div("Explication de la variable")
+    ])
 
 if __name__ == '__main__':
     app.run_server(debug=True, threaded=True)
