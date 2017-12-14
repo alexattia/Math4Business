@@ -5,6 +5,7 @@ import dash_html_components as html
 import flask
 import os
 import pandas as pd
+from model import Model
 
 
 ## uncommment on final product
@@ -14,18 +15,18 @@ import pandas as pd
 
 
 ##FOR TEST, delete on final product
-class Model():
-    def __init__(self):
-        tab = pd.read_csv('C:\\Users\youce\OneDrive\Final M4B\Math4Business\model.csv')
-        tab = tab.set_index('Unnamed: 0')
-        self.model = tab
-        self.W = []
+# class Model():
+#     def __init__(self):
+#         tab = pd.read_csv('model.csv')
+#         tab = tab.set_index('Unnamed: 0')
+#         self.model = tab
+#         self.W = []
 
-    def compute_score(self):
-        pass
+#     def compute_score(self):
+#         pass
 
-
-value_model = Model()
+W = {'time-slider' : 1, 'cost-slider': 3, 'liquidity-slider' : 5 }
+value_model = Model(W=list(W.values()))
 ##
 
 weights = {

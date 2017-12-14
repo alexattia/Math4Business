@@ -11,11 +11,15 @@ from selenium.common.exceptions import TimeoutException
 from datetime import datetime, timedelta
 import requests
 import json
+import platform
 
 columns = ['Height', 'Transactions', 'AvgFee/Tx', 'RewardFee', 'Time']
 
 def openPhantom():
-    d = webdriver.PhantomJS('/home/alexattia/node_modules/.bin/ghostdriver')
+    if platform.system() == 'Darwin':
+        d = webdriver.PhantomJS()
+    else:
+        d = webdriver.PhantomJS('/home/alexattia/node_modules/.bin/ghostdriver')
     d.set_page_load_timeout(5)
     return d
 
