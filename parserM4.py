@@ -24,22 +24,26 @@ def openPhantom():
 
 
 def parse_bitinfocharts():
-    d = openPhantom()
+    # d = openPhantom()
+    d = webdriver.Chrome()
     try:
         d.get("https://bitinfocharts.com/")
     except:
         pass
+    # click to get Doge info
+    #time.sleep(1)
+    d.find_element_by_xpath("//span[@id='s_doge'][@class='label s_coins']").click()
+
     table = d.find_element_by_id('main_body').find_element_by_tag_name('tbody').get_attribute('innerHTML')
     bs = BeautifulSoup(table, "lxml")
     d.quit()
     df = pd.DataFrame()
     df['Columns'] = [k.find('td').getText() for k in bs.find_all('tr')]
-    for crypto in ['btc', 'eth', 'ltc', 'dash']:
+    for crypto in ['btc', 'eth', 'ltc', 'dash', 'doge']:
         df[crypto.upper()] = [p.getText() for p in bs.find_all(class_='c_%s' % crypto)]
     df2 = df.copy()
-    # TODO Parsing DOGE blockchain
-    stopwords = ['BTC', 'ETH', 'LTC', 'DASH']
 
+    stopwords = ['BTC', 'ETH', 'LTC', 'DASH', 'DOGE']
     def remove_chars(x):
         num = re.sub('[^0-9]', '', x)
         if len(str(num)) < 3:

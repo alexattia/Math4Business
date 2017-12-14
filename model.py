@@ -47,10 +47,9 @@ class Model():
         for chain, df_chain in self.blockchains.items():
             df_chain[columns[4]] = pd.to_datetime(df_chain[columns[5]]).diff(periods=-1).apply(
                 lambda x: x.total_seconds())
-            if chain != 'DOGE':
-                self.model.at['Currency_Market', chain] = self.gen_infos.loc[1][chain]
-                self.model.at['Price_USD', chain] = self.gen_infos.loc[2][chain]
-                self.model.at['Market_Capitalization', chain] = self.gen_infos.loc[3][chain]
+            self.model.at['Currency_Market', chain] = self.gen_infos.loc[1][chain]
+            self.model.at['Price_USD', chain] = self.gen_infos.loc[2][chain]
+            self.model.at['Market_Capitalization', chain] = self.gen_infos.loc[3][chain]
             for col in columns[1:5]:
                 self.model.at[col + '_Mean', chain] = df_chain[col].mean()
                 self.model.at[col + '_Std', chain] = df_chain[col].std()
