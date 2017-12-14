@@ -68,6 +68,7 @@ class Model():
             self.model.loc['Cost'] = 1 - (self.model.loc['Cost_'] / self.model.loc['Cost_'].sum())
 
             self.compute_score()
+            self.model = self.model.sort_values(by='Score', ascending=False, axis=1)
 
     def compute_score(self):
         self.model.loc['Score'] = (self.W[0] * self.model.loc['Liquidity'] +

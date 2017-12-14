@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 import requests
 import json
 import platform
+from selenium.webdriver.chrome.options import Options 
 
 columns = ['Height', 'Transactions', 'AvgFee/Tx', 'RewardFee', 'Time']
 
@@ -24,8 +25,10 @@ def openPhantom():
 
 
 def parse_bitinfocharts():
-    # d = openPhantom()
-    d = webdriver.Chrome()
+    chrome_options = Options()  
+    chrome_options.add_argument("--headless")  
+    d = webdriver.Chrome(chrome_options=chrome_options)
+    
     try:
         d.get("https://bitinfocharts.com/")
     except:
