@@ -134,7 +134,7 @@ def display_content(value):
             figure={
                 'data': 
                 [
-                    {'x': table.df[value].index, 'y': table.df[value].values, 'type': 'bar', 'name': 'SF'},
+                    {'x': i.df[value].index, 'y': table.df[value].values, 'type': 'bar', 'name': 'SF'},
                 ],
                 'layout': {
                 }

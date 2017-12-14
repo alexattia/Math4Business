@@ -1,33 +1,10 @@
 import dash
-# import dash_auth
 import dash_core_components as dcc
 import dash_html_components as html
 import flask
-import os
-import pandas as pd
 from model import Model
 
-
-## uncommment on final product
-# import model
-# value_model = model.Model()
-##
-
-
-##FOR TEST, delete on final product
-# class Model():
-#     def __init__(self):
-#         tab = pd.read_csv('model.csv')
-#         tab = tab.set_index('Unnamed: 0')
-#         self.model = tab
-#         self.W = []
-
-#     def compute_score(self):
-#         pass
-
-W = {'time-slider' : 1, 'cost-slider': 3, 'liquidity-slider' : 5 }
-value_model = Model(W=list(W.values()))
-##
+value_model = Model(W=[0.5, 1, 3])
 
 weights = {
     'Temps de traitement': 'Processing time',
@@ -105,8 +82,8 @@ app.layout = html.Div(children=
               dcc.Slider(
                   min=0,
                   max=5,
-                  step=1,
-                  value=0,
+                  step=0.5,
+                  value=value_model.W[0],
                   id='liquidity-slider',
               )]),
 
@@ -114,8 +91,8 @@ app.layout = html.Div(children=
               dcc.Slider(
                   min=0,
                   max=5,
-                  step=1,
-                  value=0,
+                  step=0.5,
+                  value=value_model.W[1],
                   id='cost-slider',
               )]),
 
@@ -123,8 +100,8 @@ app.layout = html.Div(children=
               dcc.Slider(
                   min=0,
                   max=5,
-                  step=1,
-                  value=0,
+                  step=0.5,
+                  value=value_model.W[2],
                   id='time-slider',
               )]),
 
@@ -191,6 +168,7 @@ def update_time(time, cost, liquidity):
             'title': 'Valeur Operationnelle'
         }
     }
+
 
 if __name__ == '__main__':
     app.run_server(debug=True, threaded=True)
