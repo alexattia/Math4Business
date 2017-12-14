@@ -40,7 +40,7 @@ class Model():
             file = 'dump_%s.csv' % crypt.lower()
             p = pathlib.Path(file)
             if p.is_file():
-                self.blockchains[crypt] = pd.read_csv(file)
+                self.blockchains[crypt] = pd.read_csv(file, index_col=0)
 
     def create_model(self, perc=0.95):
         self.model = pd.DataFrame()

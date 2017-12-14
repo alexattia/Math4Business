@@ -49,12 +49,12 @@ def dump_crypto(crypto):
         new_dump = parserM4.parse_blockcypher(crypto)
     else:
         previous_dump = pd.read_csv(file, index_col=0)
-        last_block_dump = int(previous_dump.Height.max())
+        # Getting the last 200 blocks (it won't be continuous)
         first_new_block = parserM4.get_first_block(crypto)
         if first_new_block == -1:
             print('Too many requests')
             return -1
-        n_block = first_new_block - last_block_dump
+        n_block = 200 # first_new_block - last_block_dump
         temp_dump = parserM4.parse_blockcypher(crypto, 
                             first_block=first_new_block, n_block=n_block)
         new_dump = pd.concat([temp_dump, previous_dump])
