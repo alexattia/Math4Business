@@ -62,9 +62,12 @@ class Model():
                 self.model.loc[feature] = self.model.loc[feature+'_']/self.model.loc[feature+'_'].max()
             self.model.loc['Cost'] = 1-(self.model.loc['Cost_']/self.model.loc['Cost_'].sum())
 
-            self.model.loc['Score'] = (self.W[0]*self.model.loc['Liquidity'] +
-                                       self.W[1]*self.model.loc['Cost'] + 
-                                       self.W[2]*self.model.loc['Processing time'])/np.sum(self.W)
+            self.compute_score()
+
+    def compute_score(self):
+        self.model.loc['Score'] = (self.W[0] * self.model.loc['Liquidity'] +
+                                   self.W[1] * self.model.loc['Cost'] +
+                                   self.W[2] * self.model.loc['Processing time']) / np.sum(self.W)
 
 
 
