@@ -3,6 +3,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 import flask
 from model import Model
+import numpy as np
 
 value_model = Model(W=[0.5, 1, 3])
 
@@ -55,6 +56,7 @@ header = html.Div(
     )
 )
 
+#body
 app.layout = html.Div(children=
 [
     header,
@@ -65,7 +67,35 @@ app.layout = html.Div(children=
     html.H3(children='Valeur operationnelle'
             ),
 
-    html.Hr(style={'margin': '0', 'margin-bottom': '5'}),
+    html.Div(style={'columnCount': 3}, children =[html.P('Liquidity'),
+              dcc.Slider(
+                  min=0,
+                  max=5,
+                  step=0.5,
+                  marks={i: '' for i in np.arange(0.0, 5.5, 0.5)},
+                  value=value_model.W[0],
+                  id='liquidity-slider'
+              ),
+      html.P('Cost'),
+              dcc.Slider(
+                  min=0,
+                  max=5,
+                  step=0.5,
+                  marks={i: '' for i in np.arange(0.0, 5.5, 0.5)},
+                  value=value_model.W[1],
+                  id='cost-slider'
+              ),
+      html.P('Time Processing'),
+              dcc.Slider(
+                  min=0,
+                  max=5,
+                  step=0.5,
+                  marks={i: '' for i in np.arange(0.0, 5.5, 0.5)},
+                  value=value_model.W[2],
+                  id='time-slider'
+              )]),
+
+    html.Hr(style={'margin': '0', 'margin-bottom': '20'}),
 
     dcc.Graph(id='val_ope_graph',
               figure={
@@ -78,35 +108,8 @@ app.layout = html.Div(children=
                   }
               }),
 
-    html.Div([html.P('Liquidity:'),
-              dcc.Slider(
-                  min=0,
-                  max=5,
-                  step=0.5,
-                  value=value_model.W[0],
-                  id='liquidity-slider',
-              )]),
-
-    html.Div([html.P('Cost:'),
-              dcc.Slider(
-                  min=0,
-                  max=5,
-                  step=0.5,
-                  value=value_model.W[1],
-                  id='cost-slider',
-              )]),
-
-    html.Div([html.P('Time Processing:'),
-              dcc.Slider(
-                  min=0,
-                  max=5,
-                  step=0.5,
-                  value=value_model.W[2],
-                  id='time-slider',
-              )]),
-
-    # Tabs
-    html.Hr(style={'margin': '0', 'margin-bottom': '5'}),
+    # Tabs  
+    html.Hr(style={'margin': '0', 'margin-bottom': '30'}),
     dcc.Tabs(
         tabs=[
             {'label': i, 'value': i} for i in param_list
@@ -147,7 +150,7 @@ def display_content(value):
                 }
             }
         ),
-        html.Div("Explication de la variable")
+        #html.Div("Explication de la variable")
     ])
 
 
@@ -171,4 +174,4 @@ def update_time(time, cost, liquidity):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True, threaded=True)
+    app.run_server(debug=False, threaded=False)
