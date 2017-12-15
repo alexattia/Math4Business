@@ -100,8 +100,14 @@ app.layout = html.Div(children=
     dcc.Graph(id='val_ope_graph',
               figure={
                   'data': [
-                      {'x': value_model.model.loc['Score'].index, 'y': value_model.model.loc['Score'].values,
-                       'type': 'bar', 'name': 'SF'},
+                      {'x': value_model.models[1].loc['Score'].index, 'y': value_model.models[1].loc['Score'].values,
+                       'type': 'bar', 'name': '1 day'},
+                      {'x': value_model.models[2].loc['Score'].index, 'y': value_model.models[2].loc['Score'].values,
+                       'type': 'bar', 'name': '2 days'},
+                      {'x': value_model.models[5].loc['Score'].index, 'y': value_model.models[5].loc['Score'].values,
+                       'type': 'bar', 'name': '5 days'},
+                      {'x': value_model.models[10].loc['Score'].index, 'y': value_model.models[10].loc['Score'].values,
+                       'type': 'bar', 'name': '10 days'},
                   ],
                   'layout': {
                       'title': 'Valeur Operationnelle'
@@ -143,9 +149,15 @@ def display_content(value):
             figure={
                 'data':
                     [
-                        {'x': value_model.model.loc[value].index, 'y': value_model.model.loc[value].values,
-                         'type': 'bar', 'name': 'SF'},
-                    ],
+                      {'x': value_model.models[1].loc[value].index, 'y': value_model.models[1].loc[value].values,
+                       'type': 'bar', 'name': '1 day'},
+                      {'x': value_model.models[2].loc[value].index, 'y': value_model.models[2].loc[value].values,
+                       'type': 'bar', 'name': '2 days'},
+                      {'x': value_model.models[5].loc[value].index, 'y': value_model.models[5].loc[value].values,
+                       'type': 'bar', 'name': '5 days'},
+                      {'x': value_model.models[10].loc[value].index, 'y': value_model.models[10].loc[value].values,
+                       'type': 'bar', 'name': '10 days'},
+                  ],
                 'layout': {
                 }
             }
@@ -161,12 +173,18 @@ def display_content(value):
      dash.dependencies.Input('time-slider', 'value')])
 def update_time(time, cost, liquidity):
     value_model.W = [liquidity, cost, time]
-    value_model.compute_score()
+    value_model.update_model()
     return {
         'data': [
-            {'x': value_model.model.loc['Score'].index, 'y': value_model.model.loc['Score'].values, 'type': 'bar',
-             'name': 'SF'},
-        ],
+                      {'x': value_model.models[1].loc['Score'].index, 'y': value_model.models[1].loc['Score'].values,
+                       'type': 'bar', 'name': '1 day'},
+                      {'x': value_model.models[2].loc['Score'].index, 'y': value_model.models[2].loc['Score'].values,
+                       'type': 'bar', 'name': '2 days'},
+                      {'x': value_model.models[5].loc['Score'].index, 'y': value_model.models[5].loc['Score'].values,
+                       'type': 'bar', 'name': '5 days'},
+                      {'x': value_model.models[10].loc['Score'].index, 'y': value_model.models[10].loc['Score'].values,
+                       'type': 'bar', 'name': '10 days'},
+                  ],
         'layout': {
             'title': 'Valeur Operationnelle'
         }
@@ -174,4 +192,4 @@ def update_time(time, cost, liquidity):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=False, threaded=False)
+    app.run_server(debug=False, threaded=False, port=8060)

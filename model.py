@@ -86,4 +86,7 @@ class Model():
                                self.W[2] * model.loc['Processing time']) / np.sum(self.W)
         return model
 
+    def update_model(self):
+        self.models = {d:self.create_model(d) for d in self.models.keys()}
+
 
