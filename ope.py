@@ -56,7 +56,7 @@ header = html.Div(
     )
 )
 
-#body
+# Body
 app.layout = html.Div(children=
 [
     header,
@@ -99,6 +99,7 @@ app.layout = html.Div(children=
 
     dcc.Graph(id='val_ope_graph',
               figure={
+                  # grouped bar plots with the score grouped per crypto and for different number of days
                   'data': [
                       {'x': value_model.models[1].loc['Score'].index, 'y': value_model.models[1].loc['Score'].values,
                        'type': 'bar', 'name': '1 day'},
@@ -143,6 +144,10 @@ app.layout = html.Div(children=
 @app.callback(dash.dependencies.Output('tab_output', 'children'),
               [dash.dependencies.Input('tabs', 'value')])
 def display_content(value):
+    """
+    Content for grouped bar plot for the different parameters
+    :return: Graph format for grouped bar plot
+    """
     return html.Div([
         dcc.Graph(
             id='graph',
@@ -172,6 +177,10 @@ def display_content(value):
      dash.dependencies.Input('cost-slider', 'value'),
      dash.dependencies.Input('time-slider', 'value')])
 def update_time(time, cost, liquidity):
+    """
+    Update model when we update the weights for the model
+    :return: json format for a grouped bar plots 
+    """
     value_model.W = [liquidity, cost, time]
     value_model.update_model()
     return {
