@@ -6,13 +6,9 @@ from model import Model
 import numpy as np
 
 value_model = Model(W=[0.5, 1, 3])
+param_list1 = ['Liquidity','Cost','Processing time']
+param_list2 = ['Liquidité','Coût','Temps de traitement']
 
-weights = {
-    'Temps de traitement': 'Processing time',
-    'Coût': 'Cost',
-    'Liquidité': 'Liquidity',
-}
-param_list = list(weights.values())
 
 server = flask.Flask(__name__)
 # server.secret_key = os.environ.get('secret_key', 'secret')
@@ -67,7 +63,7 @@ app.layout = html.Div(children=
     html.H3(children='Valeur operationnelle'
             ),
 
-    html.Div(style={'columnCount': 3}, children =[html.P('Liquidity'),
+    html.Div(style={'columnCount': 3}, children =[html.P('Liquidité'),
               dcc.Slider(
                   min=0,
                   max=5,
@@ -76,7 +72,7 @@ app.layout = html.Div(children=
                   value=value_model.W[0],
                   id='liquidity-slider'
               ),
-      html.P('Cost'),
+      html.P('Coût'),
               dcc.Slider(
                   min=0,
                   max=5,
@@ -85,7 +81,7 @@ app.layout = html.Div(children=
                   value=value_model.W[1],
                   id='cost-slider'
               ),
-      html.P('Time Processing'),
+      html.P('Temps de traitement'),
               dcc.Slider(
                   min=0,
                   max=5,
@@ -102,13 +98,13 @@ app.layout = html.Div(children=
                   # grouped bar plots with the score grouped per crypto and for different number of days
                   'data': [
                       {'x': value_model.models[1].loc['Score'].index, 'y': value_model.models[1].loc['Score'].values,
-                       'type': 'bar', 'name': '1 day'},
+                       'type': 'bar', 'name': '1 jour'},
                       {'x': value_model.models[2].loc['Score'].index, 'y': value_model.models[2].loc['Score'].values,
-                       'type': 'bar', 'name': '2 days'},
+                       'type': 'bar', 'name': '2 jours'},
                       {'x': value_model.models[5].loc['Score'].index, 'y': value_model.models[5].loc['Score'].values,
-                       'type': 'bar', 'name': '5 days'},
+                       'type': 'bar', 'name': '5 jours'},
                       {'x': value_model.models[10].loc['Score'].index, 'y': value_model.models[10].loc['Score'].values,
-                       'type': 'bar', 'name': '10 days'},
+                       'type': 'bar', 'name': '10 jours'},
                   ],
                   'layout': {
                       'title': 'Valeur Operationnelle'
@@ -119,9 +115,9 @@ app.layout = html.Div(children=
     html.Hr(style={'margin': '0', 'margin-bottom': '30'}),
     dcc.Tabs(
         tabs=[
-            {'label': i, 'value': i} for i in param_list
+            {'label': param_list2[i], 'value': param_list1[i]} for i in range(3)
         ],
-        value=param_list[0],
+        value=param_list1[0],
         id='tabs'
     ),
 
@@ -155,13 +151,13 @@ def display_content(value):
                 'data':
                     [
                       {'x': value_model.models[1].loc[value].index, 'y': value_model.models[1].loc[value].values,
-                       'type': 'bar', 'name': '1 day'},
+                       'type': 'bar', 'name': '1 jour'},
                       {'x': value_model.models[2].loc[value].index, 'y': value_model.models[2].loc[value].values,
-                       'type': 'bar', 'name': '2 days'},
+                       'type': 'bar', 'name': '2 jours'},
                       {'x': value_model.models[5].loc[value].index, 'y': value_model.models[5].loc[value].values,
-                       'type': 'bar', 'name': '5 days'},
+                       'type': 'bar', 'name': '5 jours'},
                       {'x': value_model.models[10].loc[value].index, 'y': value_model.models[10].loc[value].values,
-                       'type': 'bar', 'name': '10 days'},
+                       'type': 'bar', 'name': '10 jours'},
                   ],
                 'layout': {
                 }
@@ -176,7 +172,7 @@ def display_content(value):
     [dash.dependencies.Input('liquidity-slider', 'value'),
      dash.dependencies.Input('cost-slider', 'value'),
      dash.dependencies.Input('time-slider', 'value')])
-def update_time(time, cost, liquidity):
+def update_time(liquidity, cost, time):
     """
     Update model when we update the weights for the model
     :return: json format for a grouped bar plots 
@@ -186,13 +182,13 @@ def update_time(time, cost, liquidity):
     return {
         'data': [
                       {'x': value_model.models[1].loc['Score'].index, 'y': value_model.models[1].loc['Score'].values,
-                       'type': 'bar', 'name': '1 day'},
+                       'type': 'bar', 'name': '1 jour'},
                       {'x': value_model.models[2].loc['Score'].index, 'y': value_model.models[2].loc['Score'].values,
-                       'type': 'bar', 'name': '2 days'},
+                       'type': 'bar', 'name': '2 jours'},
                       {'x': value_model.models[5].loc['Score'].index, 'y': value_model.models[5].loc['Score'].values,
-                       'type': 'bar', 'name': '5 days'},
+                       'type': 'bar', 'name': '5 jours'},
                       {'x': value_model.models[10].loc['Score'].index, 'y': value_model.models[10].loc['Score'].values,
-                       'type': 'bar', 'name': '10 days'},
+                       'type': 'bar', 'name': '10 jours'},
                   ],
         'layout': {
             'title': 'Valeur Operationnelle'
