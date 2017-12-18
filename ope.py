@@ -4,8 +4,9 @@ import dash_html_components as html
 import flask
 from model import Model
 import numpy as np
+import os
 
-value_model = Model(W=[0.5, 1, 3])
+value_model = Model(W=[0.5, 1.5, 3])
 param_list1 = ['Liquidity','Cost','Processing time']
 param_list2 = ['Liquidité','Coût','Temps de traitement']
 
@@ -16,37 +17,67 @@ app = dash.Dash(__name__, server=server)
 app.config.supress_callback_exceptions = True
 
 # Displaying
+#external_css = ["https://fonts.googleapis.com/css?family=Overpass:300,300i",
+#                "https://cdn.rawgit.com/plotly/dash-app-stylesheets/dab6f937fd5548cebf4c6dc7e93a10ac438f5efb/dash-technical-charting.css"]
+
+#for css in external_css:
+#    app.css.append_css({"external_url": css})
+
+#app.css.append_css({
+#    'external_url': (
+#        'https://cdn.rawgit.com/plotly/dash-app-stylesheets/8485c028c19c393e9ab85e1a4fafd78c489609c2/dash-docs-base.css',
+#        'https://cdn.rawgit.com/plotly/dash-app-stylesheets/30b641e2e89753b13e6557b9d65649f13ea7c64c/dash-docs-custom.css',
+#        'https://fonts.googleapis.com/css?family=Dosis'
+#    )
+#})
+
+css_directory = os.getcwd()
+stylesheets = ['ownest.css']
+static_css_route = '/static/'
+
+
+@app.server.route('{}<stylesheet>'.format(static_css_route))
+def serve_stylesheet(stylesheet):
+    if stylesheet not in stylesheets:
+        raise Exception(
+            '"{}" is excluded from the allowed static files'.format(
+                stylesheet
+            )
+        )
+    return flask.send_from_directory(css_directory, stylesheet)
+
+
+for stylesheet in stylesheets:
+    app.css.append_css({"external_url": "/static/{}".format(stylesheet)})
+
+
+
+
+# Displaying
 external_css = ["https://fonts.googleapis.com/css?family=Overpass:300,300i",
-                "https://cdn.rawgit.com/plotly/dash-app-stylesheets/dab6f937fd5548cebf4c6dc7e93a10ac438f5efb/dash-technical-charting.css"]
+                "https://fonts.googleapis.com/css?family=Dosis", 
+                "https://cdn.rawgit.com/plotly/dash-app-stylesheets/dab6f937fd5548cebf4c6dc7e93a10ac438f5efb/dash-technical-charting.css",
+                'https://cdn.rawgit.com/plotly/dash-app-stylesheets/8485c028c19c393e9ab85e1a4fafd78c489609c2/dash-docs-base.css']
 
 for css in external_css:
     app.css.append_css({"external_url": css})
 
-app.css.append_css({
-    'external_url': (
-        'https://cdn.rawgit.com/plotly/dash-app-stylesheets/8485c028c19c393e9ab85e1a4fafd78c489609c2/dash-docs-base.css',
-        'https://cdn.rawgit.com/plotly/dash-app-stylesheets/30b641e2e89753b13e6557b9d65649f13ea7c64c/dash-docs-custom.css',
-        'https://fonts.googleapis.com/css?family=Dosis'
-    )
-})
-
 # Header
 header = html.Div(
-    className='header', style={'background-color': '#1B61A4'},
+    className='header',
     children=html.Div(
         className='container-width',
-        style={'background-color': '#1B61A4', 'height': '100%'},
+        style={'height': '80%','text-align': 'left'},
         children=[
             html.A(html.Img(
-                src="https://ownest.io/images/header-logo.png",
+                src="https://ownest.io/images/ownest.png",
                 className="logo"
-            ), href='https://ownest.io/', className="logo-link"),
+            ), href='https://Ownest.io/', className="logo-link"),
 
             html.Div(className="links", children=[
-                html.A('Valeur Operationnelle', className="link active", href="/",
-                       style={'background-color': '#1B61A4', 'color': '#FFFFFF'}),
-                html.A('Variables', className="link", href="/variables",
-                       style={'background-color': '#1B61A4', 'color': '#FFFFFF'}),
+                #html.A('Variables', className="link active", href="/variables"),
+                html.A('Valeur Opérationnelle', className="link", href="/valprob"),
+                #html.A('Evolution', className="link", href="/valprobevo"),
             ])
         ]
     )
