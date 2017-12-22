@@ -103,12 +103,14 @@ class Model():
             # Compute the unnormalized Processing Time (manually crafter formula)
             # Depends on the waiting time per block and its variation
             # TODO add MemPool : waiting time per transaction
-            model.loc['Processing time_'] = (model.loc[rows[15]] / (
-                    model.loc[rows[14]] * model.loc[rows[16]]))
+            model.loc['Processing time_'] = (model.loc[rows[14]] / (
+                     model.loc[rows[15]] * model.loc[rows[16]]))
 
             # Normalization of the variable
-            for feature in ['Liquidity', 'Processing time']:
-                model.loc[feature] = model.loc[feature + '_'] / model.loc[feature + '_'].max()
+            # for feature in ['Liquidity', 'Processing time']:
+            #     model.loc[feature] = model.loc[feature + '_'] / model.loc[feature + '_'].max()
+            model.loc['Processing time'] = (model.loc['Processing time_'] / model.loc['Processing time_'].sum())    
+            model.loc['Liquidity'] = (model.loc['Liquidity_'] / model.loc['Liquidity_'].sum())
             model.loc['Cost'] = 1 - (model.loc['Cost_'] / model.loc['Cost_'].sum())
 
             # Compute the final score
