@@ -10,31 +10,40 @@ import requests
 import json
 import platform
 from selenium.webdriver.chrome.options import Options 
-
+import signal
+ 
 columns = ['Height', 'Transactions', 'AvgFee/Tx', 'RewardFee', 'Time']
 
 
 def openPhantom():
-    if platform.system() == 'Darwin':
-        d = webdriver.PhantomJS()
-    else:
+    #if platform.system() == 'Darwin':
+    d = webdriver.PhantomJS()
+    d.set_window_size(1124, 850)
+    #chrome_options = webdriver.ChromeOptions()
+    #chrome_options.add_argument('headless')
+    # chrome_options.add_argument('--no-sandbox')
+    #d = webdriver.Chrome('/usr/local/bin/chromedriver', chrome_options=chrome_options)
+    #else:
         # d = webdriver.PhantomJS('/home/alexattia/node_modules/.bin/ghostdriver')
-        d = webdriver.PhantomJS(executable_path=r'C:\Users\youce\Anaconda3\Library\bin\phantomjs.exe')
-    d.set_page_load_timeout(5)
+        # d = webdriver.PhantomJS(executable_path=r'C:\Users\youce\Anaconda3\Library\bin\phantomjs.exe')
+    d.set_page_load_timeout(10)
+    #d.service.process.send_signal(signal.SIGTERM)
     return d
 
 
 def parse_bitinfocharts():
-    chrome_options = Options()  
-    chrome_options.add_argument("--headless")  
-    d = webdriver.Chrome(chrome_options=chrome_options)
-    
+    # chrome_options = Options()  
+    # chrome_options.add_argument("--headless")  
+    # d = webdriver.Chrome(chrome_options=chrome_options)
+    d = openPhantom()
+
     try:
         d.get("https://bitinfocharts.com/")
     except:
         pass
     # click to get Doge info
-    #time.sleep(1)
+    time.sleep(2)
+    d.save_screenshot('screen.png') 
     d.find_element_by_xpath("//span[@id='s_doge'][@class='label s_coins']").click()
 
     table = d.find_element_by_id('main_body').find_element_by_tag_name('tbody').get_attribute('innerHTML')
@@ -87,7 +96,6 @@ def parse_one_day_btc(year, month, day, verbose=False):
     """
     d = openPhantom()
     try:
-        d.set_page_load_timeout(5)
         d.get("https://btc.com/block?date=%s-%02d-%02d" % (year, month, day))
         table = d.find_element_by_class_name('table').find_element_by_tag_name('tbody').get_attribute('innerHTML')
     except TimeoutException as ex:
@@ -127,6 +135,7 @@ def parse_btc(n_days=10, first_time=None):
     for col in df.columns[:6]:
         df[col] = df[col].apply(lambda x: float(x.replace(',', '')))
     df['RewardFee'] = df[df.columns[6]].apply(lambda x: float(x[x.index('+ ') + 2:x.index(' BTC')]))
+    print(df[columns[4]][:7])
     df[columns[4]] = pd.to_datetime(df[columns[4]], format='%Y-%m-%d %H:%M:%S')
     return df.rename(columns={'Tx Count': columns[1], 'Avg Fee Per Tx': columns[2]})
 

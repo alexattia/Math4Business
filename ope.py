@@ -76,7 +76,7 @@ header = html.Div(
 
             html.Div(className="links", children=[
                 #html.A('Variables', className="link active", href="/variables"),
-                html.A('Valeur Opérationnelle', className="link", href="/valprob"),
+                # html.A('Valeur Opérationnelle', className="link", href="/valprob"),
                 #html.A('Evolution', className="link", href="/valprobevo"),
             ])
         ]

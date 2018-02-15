@@ -4,7 +4,7 @@ import pathlib
 import pandas as pd
 import numpy as np
 import time
-abs_path = '/home/alexattia/Work/Math4Business/'
+abs_path = '/var/www/valoperationnelle/'
 
 def dump_btc():
     file = abs_path + 'dump_btc.csv'
@@ -67,6 +67,6 @@ if __name__ == '__main__':
     cryptos = ['LTC', 'DASH', 'DOGE']
     time.sleep(np.random.rand(1)[0])
     dump_btc()
-    dump_eth()
     c = np.random.choice(cryptos)
     code = dump_crypto(c)
+    dump_eth()
