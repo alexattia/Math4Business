@@ -137,4 +137,13 @@ class Model():
         """
         self.models = {d:self.create_model(d) for d in self.models.keys()}
 
+    def volatility(self, chain):
+        """
+        Get the value grouped by day for a blockchain
+        :param chain: blockchain to consider
+        """
+        df = self.blockchains[chain]
+        df['Day'] = df['Time'].apply(lambda x:str(x).split(' ')[0])
+        return df.groupby('Day')
+
 

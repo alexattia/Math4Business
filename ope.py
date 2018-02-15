@@ -5,8 +5,15 @@ import flask
 from model import Model
 import numpy as np
 import os
+from datetime import date
 
-value_model = Model(W=[0.5, 1.5, 3])
+d0 = date(2017, 12, 19)
+d1 = date.today()
+delta = d1-d0
+
+list_day = [1,7,30,delta.days]
+value_model = Model(W=[0.5, 1.5, 3], days_list=list_day)
+
 param_list1 = ['Liquidity','Cost','Processing time']
 param_list2 = ['Liquidité','Coût','Temps de traitement']
 
@@ -128,15 +135,9 @@ app.layout = html.Div(children=
               figure={
                   # grouped bar plots with the score grouped per crypto and for different number of days
                   'data': [
-                      {'x': value_model.models[1].loc['Score'].index, 'y': value_model.models[1].loc['Score'].values,
-                       'type': 'bar', 'name': '1 jour'},
-                      {'x': value_model.models[2].loc['Score'].index, 'y': value_model.models[2].loc['Score'].values,
-                       'type': 'bar', 'name': '2 jours'},
-                      {'x': value_model.models[5].loc['Score'].index, 'y': value_model.models[5].loc['Score'].values,
-                       'type': 'bar', 'name': '5 jours'},
-                      {'x': value_model.models[10].loc['Score'].index, 'y': value_model.models[10].loc['Score'].values,
-                       'type': 'bar', 'name': '10 jours'},
-                  ],
+                      {'x': value_model.models[1].loc['Score'].index, 'y': value_model.models[k].loc['Score'].values,
+                       'type': 'bar', 'name': '%d jour(s)' % k} for k in list_day
+                       ],
                   'layout': {
                       'title': 'Valeur Operationnelle'
                   }
@@ -181,14 +182,8 @@ def display_content(value):
             figure={
                 'data':
                     [
-                      {'x': value_model.models[1].loc[value].index, 'y': value_model.models[1].loc[value].values,
-                       'type': 'bar', 'name': '1 jour'},
-                      {'x': value_model.models[2].loc[value].index, 'y': value_model.models[2].loc[value].values,
-                       'type': 'bar', 'name': '2 jours'},
-                      {'x': value_model.models[5].loc[value].index, 'y': value_model.models[5].loc[value].values,
-                       'type': 'bar', 'name': '5 jours'},
-                      {'x': value_model.models[10].loc[value].index, 'y': value_model.models[10].loc[value].values,
-                       'type': 'bar', 'name': '10 jours'},
+                      {'x': value_model.models[k].loc[value].index, 'y': value_model.models[k].loc[value].values,
+                       'type': 'bar', 'name': '%d jour(s)' % k} for k in list_day
                   ],
                 'layout': {
                 }
@@ -212,14 +207,8 @@ def update_time(liquidity, cost, time):
     value_model.update_model()
     return {
         'data': [
-                      {'x': value_model.models[1].loc['Score'].index, 'y': value_model.models[1].loc['Score'].values,
-                       'type': 'bar', 'name': '1 jour'},
-                      {'x': value_model.models[2].loc['Score'].index, 'y': value_model.models[2].loc['Score'].values,
-                       'type': 'bar', 'name': '2 jours'},
-                      {'x': value_model.models[5].loc['Score'].index, 'y': value_model.models[5].loc['Score'].values,
-                       'type': 'bar', 'name': '5 jours'},
-                      {'x': value_model.models[10].loc['Score'].index, 'y': value_model.models[10].loc['Score'].values,
-                       'type': 'bar', 'name': '10 jours'},
+                      {'x': value_model.models[k].loc['Score'].index, 'y': value_model.models[k].loc['Score'].values,
+                       'type': 'bar', 'name': '%d jour(s)' % k } for k in list_day
                   ],
         'layout': {
             'title': 'Valeur Operationnelle'
